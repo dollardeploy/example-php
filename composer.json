@@ -1,0 +1,27 @@
+{
+    "name": "dollardeploy/example-php",
+    "description": "A PHP web application boilerplate that serves a simple HTML page with optional database support",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-pdo_pgsql": "*"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+        }
+    },
+    "scripts": {
+        "start": "php index.php",
+        "serve": "php -S localhost:8080 -t . index.php"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}
