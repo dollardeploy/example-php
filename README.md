@@ -121,6 +121,12 @@ This application is designed to work seamlessly with [DollarDeploy](https://doll
 
 * **Pre-start command:** sudo apt install -y php-fpm php-pgsql php-mysql
 
+Deploying on the command line: 
+
+```
+ddc --apiKey $DOLLARDEPLOY_API_KEY --services postgres --url https://github.com/dollardeploy/example-php --app:preStartCmd "sudo apt install php-fpm php-pgsql" --hostId $HOST_ID --app:type php
+```
+
 ## Security Notes
 
 - Static files are served only from the `web/` directory
