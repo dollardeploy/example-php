@@ -16,8 +16,7 @@
         }
     },
     "scripts": {
-        "start": "php index.php",
-        "serve": "php -S localhost:8080 -t . index.php"
+        "start": "php -S localhost:8080 -t . index.php"
     },
     "config": {
         "optimize-autoloader": true,

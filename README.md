@@ -24,10 +24,7 @@ A simple PHP web application boilerplate that serves a static HTML page with opt
 
 ```bash
 # Using PHP directly
-php index.php
-
-# Or using Make
-make run
+php -S localhost:8080 -t . index.php
 
 # Or using Composer
 composer start
@@ -118,15 +115,12 @@ Example: `/static/styles.css` → `web/styles.css`
 | `PORT` | Server port | `8080` |
 | `DATABASE_URL` | Database connection string | (none) |
 
-## Makefile Commands
+## Deploy configuration
 
-```bash
-make help      # Show available commands
-make install   # Install PHP dependencies via Composer
-make run       # Run the PHP web server
-make dev       # Run in development mode
-make clean     # Clean up generated files
-```
+This application is designed to work seamlessly with [DollarDeploy](https://dollardeploy.com), which handles build, deployment, and monitoring automatically.
+
+* **Build command:** composer install
+* **Pre-start command:** apt install php-fpm
 
 ## Security Notes
 
@@ -134,43 +128,6 @@ make clean     # Clean up generated files
 - Path traversal attacks are prevented with `realpath()` checks
 - Database credentials should be provided via `DATABASE_URL` environment variable
 - PDO is used with prepared statements for safe database operations
-
-## Deployment
-
-This application is designed to work seamlessly with [DollarDeploy](https://dollardeploy.com), which handles build, deployment, and monitoring automatically.
-
-### Manual Deployment
-
-1. Ensure PHP >= 7.4 is installed
-2. Copy all files to your server
-3. Set environment variables (`PORT`, `DATABASE_URL`)
-4. Run `php index.php`
-
-### Using Docker
-
-Create a `Dockerfile`:
-
-```dockerfile
-FROM php:8.1-cli
-
-# Install PostgreSQL and MySQL PDO drivers
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    && docker-php-ext-install pdo_mysql pdo_pgsql
-
-WORKDIR /app
-COPY . .
-
-EXPOSE 8080
-CMD ["php", "index.php"]
-```
-
-Build and run:
-
-```bash
-docker build -t php-app .
-docker run -p 8080:8080 php-app
-```
 
 ## License
 

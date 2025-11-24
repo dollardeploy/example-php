@@ -7,9 +7,6 @@
  * database connections via the DATABASE_URL environment variable.
  */
 
-// Get port from environment or default to 8080
-$port = getenv('PORT') ?: '8080';
-
 // Database connection status
 $dbConnection = null;
 $dbStatus = 'Not configured';
@@ -155,27 +152,4 @@ function handleRequest() {
     echo "404 Not Found";
 }
 
-// If running via PHP built-in server
-if (php_sapi_name() === 'cli-server') {
-    handleRequest();
-}
-// If running via CLI (start server)
-elseif (php_sapi_name() === 'cli') {
-    echo "Starting PHP web server on port $port...\n";
-    echo "Server running at http://localhost:$port\n";
-    echo "Press Ctrl+C to stop\n\n";
-
-    // Start PHP built-in web server
-    $command = sprintf(
-        'php -S 0.0.0.0:%s -t %s %s',
-        escapeshellarg($port),
-        escapeshellarg(__DIR__),
-        escapeshellarg(__FILE__)
-    );
-
-    passthru($command);
-}
-// If running via web server (Apache/Nginx)
-else {
-    handleRequest();
-}
+handleRequest();
