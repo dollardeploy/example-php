@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Example App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome to the PHP Example App!</h1>
+        <p class="text-gray-600 mb-6">
+            This is a simple web server written in PHP. It serves this static HTML page.
+        </p>
+
+        <!-- Health Check Section -->
+        <div class="mb-6 border-t pt-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">System Health</h2>
+                <button
+                    onclick="fetchHealth()"
+                    id="refreshBtn"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm font-medium"
+                >
+                    🔄 Refresh
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                <p class="mt-2 text-gray-600">Loading health status...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                <p class="text-red-700 font-semibold">⚠️ Failed to fetch health status</p>
+                <p class="text-red-600 text-sm mt-1" id="errorMessage"></p>
+            </div>
+
+            <!-- Health Status Display -->
+            <div id="healthStatus" class="hidden space-y-4">
+                <!-- App Status -->
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-3">✅</span>
+                        <div>
+                            <p class="font-semibold text-green-800">Application Status</p>
+                            <p class="text-green-700 text-sm" id="appStatus">Running</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Status -->
+                <div id="dbStatusCard" class="border-l-4 p-4 rounded">
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-3" id="dbIcon">🗄️</span>
+                        <div class="flex-1">
+                            <p class="font-semibold" id="dbTitle">Database Connection</p>
+                            <div class="mt-2 space-y-1">
+                                <div class="flex items-center text-sm">
+                                    <span class="font-medium w-24">Type:</span>
+                                    <span id="dbType" class="text-gray-700">-</span>
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <span class="font-medium w-24">Status:</span>
+                                    <span id="dbStatus" class="text-gray-700">-</span>
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <span class="font-medium w-24">Connected:</span>
+                                    <span id="dbConnected" class="text-gray-700">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Updated -->
+                <div class="text-xs text-gray-500 text-right">
+                    Last updated: <span id="lastUpdated">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DollarDeploy Info -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <p class="text-sm text-gray-700">
+                <span class="font-semibold">Powered by DollarDeploy:</span>
+                Deploy your apps with ease! DollarDeploy handles the build, deployment, and monitoring
+                automatically – no SSH required!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function fetchHealth() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const healthStatus = document.getElementById('healthStatus');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            // Show loading state
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            healthStatus.classList.add('hidden');
+            refreshBtn.disabled = true;
+            refreshBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch('/health');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Hide loading, show status
+                loading.classList.add('hidden');
+                healthStatus.classList.remove('hidden');
+
+                // Update app status
+                document.getElementById('appStatus').textContent = data.status || 'Unknown';
+
+                // Update database status
+                const db = data.database || {};
+                const dbType = db.type || 'none';
+                const dbStatus = db.status || 'Unknown';
+                const dbConnected = db.connected || false;
+
+                document.getElementById('dbType').textContent = dbType;
+                document.getElementById('dbStatus').textContent = dbStatus;
+                document.getElementById('dbConnected').textContent = dbConnected ? '✓ Yes' : '✗ No';
+
+                // Style database card based on connection status
+                const dbCard = document.getElementById('dbStatusCard');
+                const dbIcon = document.getElementById('dbIcon');
+                const dbTitle = document.getElementById('dbTitle');
+
+                if (dbType === 'none' || dbType === 'None') {
+                    dbCard.className = 'bg-gray-50 border-l-4 border-gray-400 p-4 rounded';
+                    dbIcon.textContent = '💤';
+                    dbTitle.className = 'font-semibold text-gray-700';
+                } else if (dbConnected) {
+                    dbCard.className = 'bg-green-50 border-l-4 border-green-500 p-4 rounded';
+                    dbIcon.textContent = '✅';
+                    dbTitle.className = 'font-semibold text-green-800';
+                } else {
+                    dbCard.className = 'bg-red-50 border-l-4 border-red-500 p-4 rounded';
+                    dbIcon.textContent = '❌';
+                    dbTitle.className = 'font-semibold text-red-800';
+                }
+
+                // Update timestamp
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+            } catch (err) {
+                // Show error state
+                loading.classList.add('hidden');
+                error.classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = err.message;
+            } finally {
+                // Re-enable refresh button
+                refreshBtn.disabled = false;
+                refreshBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Fetch health status on page load
+        fetchHealth();
+
+        // Auto-refresh every 30 seconds
+        setInterval(fetchHealth, 30000);
+    </script>
+</body>
+</html>
