@@ -120,7 +120,7 @@ Example: `/static/styles.css` → `web/styles.css`
 This application is designed to work seamlessly with [DollarDeploy](https://dollardeploy.com), which handles build, deployment, and monitoring automatically.
 
 * **Build command:** composer install
-* **Pre-start command:** apt install php-fpm
+* **Pre-start command:** sudo apt install php-fpm php-pgsql php-mysql
 
 ## Security Notes
 
